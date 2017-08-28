@@ -1,0 +1,26 @@
+nav{
+  height: 75px !important;
+}
+#nav-content{
+    margin-left: 2% !important;
+}
+.input-field input:focus, .input-field textarea:focus{
+  border-bottom: 1px solid #2196F3 !important;
+  box-shadow: 0 1px 0 0 #2196F3 !important;
+}
+
+.img-logo{
+    margin-top: 5%;
+}
+
+.input-field div.error, .input-radio-field div.error{
+    position: relative;
+    top: -1rem;
+    left: 0rem;
+    font-size: 0.8rem;
+    color: #FF4081;
+    -webkit-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    -o-transform: translateY(0%);
+    transform: translateY(0%);
+}
