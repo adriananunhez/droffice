@@ -1,0 +1,35 @@
+/*Create patient*/
+.patient-form-header{
+  margin-top: 1.5%;
+  padding: 0.75rem !important;
+}
+.header-form-label{
+  color: #2196F3;
+}
+.group-radio{
+  margin-left: 10%;
+}
+
+.group-radio label{
+  color: #000000;
+}
+
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:after {
+    background-color: #1a237e !important;
+}
+
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:before, [type="radio"].with-gap:checked+label:after {
+    border: 2px solid #1a237e !important;
+}
+
+#patient-sex{
+    margin-right : 5%;
+}
+
+.patient-form-data{
+    margin-bottom: 2%;
+}
+
+#sex-error{
+    margin-top:3%;
+}
