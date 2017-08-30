@@ -14,8 +14,8 @@ $(function() {
       close: 'Close',
       format: 'dd/mm/yyyy'
     });
-
-    $('.datepicker').pickadate('picker').get('highlight', 'yyyy');
-    $('.datepicker').pickadate('picker').get('highlight', 'dd');
-    $('.datepicker').pickadate('picker').get('highlight', 'mm');
+//
+//    $('.datepicker').pickadate('picker').get('highlight', 'yyyy');
+//    $('.datepicker').pickadate('picker').get('highlight', 'dd');
+//    $('.datepicker').pickadate('picker').get('highlight', 'mm');
 });

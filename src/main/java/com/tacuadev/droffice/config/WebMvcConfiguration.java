@@ -28,7 +28,7 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter{
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("i18n/message");//, "i18/errormsg"
-        messageSource.setCacheSeconds(30); //reload messages every 60 seconds
+//        messageSource.setCacheSeconds(30); //reload messages every 60 seconds
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
