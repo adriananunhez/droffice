@@ -1,5 +1,6 @@
 package com.tacuadev.droffice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacuadev.droffice.model.PatientModel;
 import com.tacuadev.droffice.service.PatientService;
 import org.apache.commons.logging.Log;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by fd on 23/08/17.
@@ -29,6 +32,44 @@ public class PatientsController {
     @Qualifier("patientService")
     PatientService patientService;
 
+    @GetMapping("/indexPatient")
+    public ModelAndView indexPatient(HttpServletRequest request){
+
+        ModelAndView mav = new ModelAndView("/patients/index");
+        HashMap<String,String> patientAutocompleteMap = new HashMap<>();
+
+        try {
+            String parameterSearch = request.getParameter("search");
+            LOG.info("parameterSearch: "+parameterSearch);
+            List<PatientModel> patienModelFilterList = patientService.getPatientModel(parameterSearch);
+            LOG.info("patienModelFilterList: "+patienModelFilterList);
+
+
+            List<PatientModel> patientModelList = patientService.getAllPatientModel();
+            ObjectMapper om = new ObjectMapper();
+
+
+            for (PatientModel patientModel:patientModelList) {
+                patientAutocompleteMap.put(patientModel.name,"");
+                patientAutocompleteMap.put(patientModel.address,"");
+                patientAutocompleteMap.put(patientModel.birthdayString,"");
+//                patientAutocompleteMap.put(patientModel.sex,"");
+            }
+
+            String patientListJSONString = om.writeValueAsString(patientAutocompleteMap);
+            LOG.info("patientListJSONString: "+patientListJSONString);
+
+            mav.addObject("patientAutocompleteJSON",patientListJSONString);
+            mav.addObject("patientsList",patientModelList);
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(),th);
+        }
+
+        return mav;
+    }
+
     @GetMapping("/createPatient")
     public ModelAndView createPatient(){
         return new ModelAndView("/patients/create");
@@ -36,7 +77,7 @@ public class PatientsController {
 
     @PostMapping("/savePatient")
     public void savePatient(HttpServletRequest request, HttpServletResponse response){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
 
         try{
             PatientModel patientModel = new PatientModel();
@@ -52,26 +93,23 @@ public class PatientsController {
             }
 
             String openingDateString = request.getParameter("opening_date");
-
+            String birthdayString = request.getParameter("birthday");
             try {
-                Date openingDate = sdf.parse(openingDateString);
-                LOG.info(request.getParameter("birthday"));
-//                Date birthday = (Date)
-//                        sdf.parse(request.getParameter("birthday"));
-//                LOG.info("birthday"+birthday);
-//                patientModel.openingDate = openingDate;
-//                patientModel.birthday = birthday;
+                Date openingDate = (Date) sdf.parse(openingDateString);
+                Date birthday = (Date) sdf.parse(birthdayString);
+
+                patientModel.openingDate = openingDate;
+                patientModel.birthday = birthday;
             }catch (Throwable th){
                 LOG.info(th.getMessage());
+                LOG.info(th.getMessage(), th);
             }
 
-
-
             patientService.savePatient(patientModel);
-            //LOG.info("FECHA DATEPICKER: "+request.getParameter("opening_date"));
-//            patientModel.openingDate = request.getParameter("opening_date");
+
         }catch (Throwable th){
             LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
         }
     }
 

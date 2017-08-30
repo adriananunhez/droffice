@@ -18,11 +18,14 @@ public class PatientModel {
 
     public Long id;
     public Date openingDate;
+    public String openingDateString;
     public String name;
     public String documentNumber;
     public String sex;
     public int sexInt;
     public Date birthday;
+    public String birthdayString;
     public String address;
     public Date creationDate;
+    public String creationDateString;
 }
