@@ -32,6 +32,7 @@
             <div class="col s12 center-align">
                 <h4>
                     <span><@spring.message code='patient.medical.history'/></span>
+                    <div id="datePickerRoot"></div>
                     <div class="input-field right">
                         <input id="opening_date" name="opening_date" type="text" class="datepicker" value="">
                         <label><span class="header-form-label"><@spring.message code='patient.openingDate'/></span></label>
