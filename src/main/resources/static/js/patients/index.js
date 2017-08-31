@@ -8,4 +8,17 @@ $(function() {
         },
         minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
       });
+
+      $("#search").click(function () {
+         $(this).select();
+      });
+
+      $("#addPatientButton").click(function (){
+           $("#addPattientForm").submit();
+      });
+
+      $('tr').click(function(){
+            var id = this.attr('id');
+            console.log("id: "+id)
+      })
 })

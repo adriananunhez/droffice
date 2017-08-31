@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,16 +33,24 @@ public class PatientsController {
     @Qualifier("patientService")
     PatientService patientService;
 
-    @GetMapping("/indexPatient")
-    public ModelAndView indexPatient(HttpServletRequest request){
+    @GetMapping("/index")
+    public ModelAndView index(HttpServletRequest request){
 
         ModelAndView mav = new ModelAndView("/patients/index");
         HashMap<String,String> patientAutocompleteMap = new HashMap<>();
-
+        List<PatientModel> patienModelFilterList = new ArrayList<>();
         try {
-            String parameterSearch = request.getParameter("search");
+            String parameterSearch = "";
+            parameterSearch = request.getParameter("search");
             LOG.info("parameterSearch: "+parameterSearch);
-            List<PatientModel> patienModelFilterList = patientService.getPatientModel(parameterSearch);
+
+            if(parameterSearch == null){
+                parameterSearch = "";
+            }
+
+            patienModelFilterList = patientService.getPatientModel(parameterSearch);
+
+
             LOG.info("patienModelFilterList: "+patienModelFilterList);
 
 
@@ -60,7 +69,8 @@ public class PatientsController {
             LOG.info("patientListJSONString: "+patientListJSONString);
 
             mav.addObject("patientAutocompleteJSON",patientListJSONString);
-            mav.addObject("patientsList",patientModelList);
+            mav.addObject("patientsList",patienModelFilterList);
+            mav.addObject("parameterSearch",parameterSearch);
 
         }catch (Throwable th){
             LOG.info(th.getMessage());
@@ -70,13 +80,13 @@ public class PatientsController {
         return mav;
     }
 
-    @GetMapping("/createPatient")
-    public ModelAndView createPatient(){
+    @GetMapping("/create")
+    public ModelAndView create(){
         return new ModelAndView("/patients/create");
     }
 
-    @PostMapping("/savePatient")
-    public void savePatient(HttpServletRequest request, HttpServletResponse response){
+    @PostMapping("/save")
+    public void save(HttpServletRequest request, HttpServletResponse response){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
 
         try{
@@ -108,6 +118,25 @@ public class PatientsController {
             patientService.savePatient(patientModel);
 
         }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }
+    }
+
+    @GetMapping("/show")
+    public ModelAndView show(){
+        PatientModel patientModel = patientService.getPatientModelById(1);
+        LOG.info("patientModel CONTROLLER: "+patientModel);
+        ModelAndView mav = new ModelAndView("/patients/show");
+        mav.addObject("patientModel",patientModel);
+        return mav;
+    }
+
+    @GetMapping("/cancel")
+    public void cancel(HttpServletResponse response){
+        try {
+            response.sendRedirect("/patients/index");
+        } catch (Throwable th) {
             LOG.info(th.getMessage());
             LOG.info(th.getMessage(), th);
         }

@@ -3,6 +3,7 @@ package com.tacuadev.droffice.model;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by fd on 25/08/17.
@@ -28,4 +29,5 @@ public class PatientModel {
     public String address;
     public Date creationDate;
     public String creationDateString;
+    public List<PatientMedicalHistoryModel> patientMedicalHistoryModelList;
 }
