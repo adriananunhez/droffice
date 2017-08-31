@@ -1,5 +1,5 @@
 $(function() {
-    $('.datepicker').pickadate({
+    /*$('.datepicker').pickadate({
       labelMonthNext: 'Next month',
       labelMonthPrev: 'Previous month',
       labelMonthSelect: 'Select a month',
@@ -13,7 +13,7 @@ $(function() {
       clear: 'Clear',
       close: 'Close',
       format: 'dd/mm/yyyy'
-    });
+    });*/
 //
 //    $('.datepicker').pickadate('picker').get('highlight', 'yyyy');
 //    $('.datepicker').pickadate('picker').get('highlight', 'dd');
