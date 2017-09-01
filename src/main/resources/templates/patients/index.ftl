@@ -49,7 +49,8 @@
                 </thead>
                 <tbody>
                 <#list patientsList  as patient>
-                    <tr id="${patient.id}">
+                    <tr class="clickable" id="${patient.id}">
+                        <a class="hide" href="<@spring.url '/patients/show/${patient.id}'/>"></a>
                         <td>${patient.name}</td>
                         <td>${patient.address}</td>
                         <td>${patient.birthdayString}</td>

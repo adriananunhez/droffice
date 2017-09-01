@@ -1,0 +1,66 @@
+/*Patient Modal*/
+#patient_history_modal{
+    width:90%;
+    max-height: 90%;
+    height: 80%;
+    top: 5%;
+}
+#sympton_textarea{
+    background-color:white;
+}
+#diagnostic_textarea{
+    background-color:white;
+}
+#prescription_textarea{
+    background-color:white;
+}
+
+.tabs .tab a:hover, .tabs .tab a.active {
+    color: #2196F3;
+    background-color: rgba(177, 220, 251, 0.5);
+}
+
+.tabs .indicator {
+    background-color: #2196F3;
+}
+
+.tabs .tab a {
+    color: #2196F3;
+}
+
+
+/*Patient Form*/
+.patient-form-header{
+  margin-top: 1.5%;
+  padding: 0.75rem !important;
+}
+.header-form-label{
+  color: #2196F3;
+}
+.group-radio{
+  margin-left: 10%;
+}
+
+.group-radio label{
+  color: #000000;
+}
+
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:after {
+    background-color: #1a237e !important;
+}
+
+[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:before, [type="radio"].with-gap:checked+label:after {
+    border: 2px solid #1a237e !important;
+}
+
+#patient-sex{
+    margin-right : 5%;
+}
+
+.patient-form-data{
+    margin-bottom: 2%;
+}
+
+#sex-error{
+    margin-top:3%;
+}

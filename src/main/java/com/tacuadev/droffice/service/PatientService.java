@@ -3,6 +3,7 @@ package com.tacuadev.droffice.service;
 import com.tacuadev.droffice.component.DataBaseUtils;
 import com.tacuadev.droffice.model.PatientMedicalHistoryModel;
 import com.tacuadev.droffice.model.PatientModel;
+import com.tacuadev.droffice.model.PlaceAttentionModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,5 +248,64 @@ public class PatientService {
             dataBaseUtils.resultSetClose(patientMedicalHistoryRs);
         }
         return patientMedicalHistoryModelList;
+    }
+
+    public void savePatientMedicalHistory(PatientMedicalHistoryModel patientMedicalHistoryModel){
+        Connection connection = null;
+        PreparedStatement patientMedicalHistoryPs = null;
+        StringBuilder patientMedicalHistorySb = new StringBuilder();
+        patientMedicalHistorySb.append("INSERT INTO patient_medical_history(creation_date, date, diagnostic, prescription, row_number, symptom, patient_id, place_attention_id)");
+        patientMedicalHistorySb.append(" VALUES (current_timestamp, ?, ?, ?, ?, ?, ?, ?);");
+        try{
+            connection = dataSource.getConnection();
+            patientMedicalHistoryPs = connection.prepareStatement(patientMedicalHistorySb.toString());
+
+            patientMedicalHistoryPs.setTimestamp(1,new Timestamp(patientMedicalHistoryModel.date.getTime()));
+            patientMedicalHistoryPs.setString(2, patientMedicalHistoryModel.diagnostic);
+            patientMedicalHistoryPs.setString(3, patientMedicalHistoryModel.prescription);
+            patientMedicalHistoryPs.setInt(4,patientMedicalHistoryModel.rowNumber);
+            patientMedicalHistoryPs.setString(5,patientMedicalHistoryModel.symptom);
+            patientMedicalHistoryPs.setLong(6, patientMedicalHistoryModel.patientModel.id);
+            patientMedicalHistoryPs.setLong(7,1);
+            patientMedicalHistoryPs.executeUpdate();
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(patientMedicalHistoryPs);
+        }
+    }
+
+    public List<PlaceAttentionModel> getPlaceAttentionModelList(){
+        List<PlaceAttentionModel> placeAttentionModelList = new ArrayList<>();
+        PlaceAttentionModel placeAttentionModel = null;
+
+        Connection connection = null;
+        PreparedStatement placeAttenttionPs = null;
+        ResultSet placeAttentionRs = null;
+        StringBuilder placeAttentionSb = new StringBuilder();
+        placeAttentionSb.append("SELECT id, description FROM place_attention;");
+        try {
+            connection = dataSource.getConnection();
+            placeAttenttionPs = connection.prepareStatement(placeAttentionSb.toString());
+            placeAttentionRs = placeAttenttionPs.executeQuery();
+
+            while (placeAttentionRs.next()){
+                placeAttentionModel = new PlaceAttentionModel();
+                placeAttentionModel.id = placeAttentionRs.getLong("id");
+                placeAttentionModel.description = placeAttentionRs.getString("description");
+                placeAttentionModelList.add(placeAttentionModel);
+            }
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(placeAttenttionPs);
+            dataBaseUtils.resultSetClose(placeAttentionRs);
+        }
+
+        return placeAttentionModelList;
     }
 }

@@ -1,16 +1,15 @@
 package com.tacuadev.droffice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tacuadev.droffice.model.PatientMedicalHistoryModel;
 import com.tacuadev.droffice.model.PatientModel;
+import com.tacuadev.droffice.model.PlaceAttentionModel;
 import com.tacuadev.droffice.service.PatientService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -121,14 +120,25 @@ public class PatientsController {
             LOG.info(th.getMessage());
             LOG.info(th.getMessage(), th);
         }
+
+        try {
+            response.sendRedirect("/patients/show/"+1);
+        } catch (Throwable th) {
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }
+
     }
 
-    @GetMapping("/show")
-    public ModelAndView show(){
-        PatientModel patientModel = patientService.getPatientModelById(1);
-        LOG.info("patientModel CONTROLLER: "+patientModel);
+    @GetMapping("/show/{patientId}")
+    public ModelAndView show(@PathVariable("patientId") long patientId){
+        PatientModel patientModel = patientService.getPatientModelById(patientId);
+        List<PlaceAttentionModel> placeAttentionModelList = patientService.getPlaceAttentionModelList();
+
+
         ModelAndView mav = new ModelAndView("/patients/show");
         mav.addObject("patientModel",patientModel);
+        mav.addObject("placeAttentionList", placeAttentionModelList);
         return mav;
     }
 
@@ -140,6 +150,34 @@ public class PatientsController {
             LOG.info(th.getMessage());
             LOG.info(th.getMessage(), th);
         }
+    }
+
+    @PostMapping("/savePatientHistory")
+    public void savePatientHistory(HttpServletRequest request, HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
+        String historyDateString = request.getParameter("history_date");
+        Long patientIdLong = Long.valueOf(request.getParameter("patientId"));
+
+        PatientMedicalHistoryModel patientMedicalHistoryModel = new PatientMedicalHistoryModel();
+
+        try {
+            patientMedicalHistoryModel.rowNumber = 1;//aca tiene que obtener el ultimo number del detalle
+            patientMedicalHistoryModel.date = (Date) sdf.parse(historyDateString);
+            patientMedicalHistoryModel.symptom = request.getParameter("sympton_textarea");
+            patientMedicalHistoryModel.diagnostic = request.getParameter("diagnostic_textarea");
+            patientMedicalHistoryModel.prescription = request.getParameter("prescription_textarea");
+            patientMedicalHistoryModel.patientModel = patientService.getPatientModelById(patientIdLong);
+            //patientMedicalHistoryModel.placeAttentionModel //falta agregar esta opcion en la vista.
+
+
+            patientService.savePatientMedicalHistory(patientMedicalHistoryModel);
+            response.sendRedirect("/patients/show/"+patientIdLong);
+
+        } catch (Throwable th) {
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }
+
     }
 
 }

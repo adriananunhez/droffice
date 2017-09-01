@@ -17,8 +17,12 @@ $(function() {
            $("#addPattientForm").submit();
       });
 
-      $('tr').click(function(){
-            var id = this.attr('id');
-            console.log("id: "+id)
-      })
+//      $('.clickable').click(function(){
+//            console.log($(this))
+//      })
+
+      $('.clickable').click(function() {
+        var userId = $(this).attr('id');
+        $("a[href='/patients/show/"+userId)+"']"[0].click();
+      });
 })
