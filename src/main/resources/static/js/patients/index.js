@@ -23,6 +23,6 @@ $(function() {
 
       $('.clickable').click(function() {
         var userId = $(this).attr('id');
-        $("a[href='/patients/show/"+userId)+"']"[0].click();
+        $("a[href='/patients/show/"+userId+"']")[0].click();
       });
 })

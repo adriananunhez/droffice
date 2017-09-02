@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,13 +25,24 @@ import java.util.List;
  * Created by fd on 23/08/17.
  */
 @RestController
-@RequestMapping("/patients")
+@RequestMapping({"/patients","/"})
 public class PatientsController {
     private static final Log LOG = LogFactory.getLog(PatientsController.class);
 
     @Autowired
     @Qualifier("patientService")
     PatientService patientService;
+
+    @GetMapping("/")
+    public void redirectToIndex(HttpServletResponse response){
+        try {
+            response.sendRedirect("/patients/index");
+        } catch (Throwable th) {
+            LOG.info("EXCEPTION: "+th.getMessage());
+            LOG.info("EXCEPTION: "+th.getMessage(), th);
+        }
+    }
+
 
     @GetMapping("/index")
     public ModelAndView index(HttpServletRequest request){
