@@ -12,7 +12,9 @@
     <@header_nav/>
 </header>
 <body>
-
+<span id="errori18n" class="hide">
+    <@spring.message code='error.default'/>
+</span>
 <div class="row">
     <div class="col s12 m12 l12">
         <!-- Este div no tiene contenido, ya que la clase row aplica a su primer hijo
@@ -23,18 +25,17 @@
         <a id="buttonSave" class="waves-effect waves-light btn blue darken-4">
             <i class="material-icons left">save</i><@spring.message code='button.default.save'/>
         </a>
-        <a class="waves-effect waves-light btn modal-trigger blue darken-4" href="">
+        <a id="cancelPatientButton" class="waves-effect waves-light btn modal-trigger blue darken-4" href="<@spring.url '/patients/cancel'/>">
             <i class="material-icons left">cancel</i><@spring.message code='button.default.cancel'/>
         </a>
     </div>
-    <form id="formValidate" class="" action="/patients/savePatient" method="post">
+    <form id="formValidate" class="" action="/patients/save" method="post">
         <div class="col s12 offset-m1 m10 offset-l1 l10 z-depth-3 patient-form-header">
             <div class="col s12 center-align">
                 <h4>
                     <span><@spring.message code='patient.medical.history'/></span>
-                    <div id="datePickerRoot"></div>
                     <div class="input-field right">
-                        <input id="opening_date" name="opening_date" type="text" class="datepicker" value="">
+                        <input id="opening_date" placeholder="" name="opening_date" type="text" class="datepicker" value="">
                         <label><span class="header-form-label"><@spring.message code='patient.openingDate'/></span></label>
                     </div>
                 </h4>
@@ -52,7 +53,7 @@
                     </div>
                     <div class="col s12 m12 l12">
                         <div class="input-field col s6">
-                            <input id="birthday" name="birthday" type="text" class="datepicker" value="" required>
+                            <input id="birthday" placeholder="" name="birthday" type="text" class="datepicker" value="" required>
                             <label for="birthday"><span class="header-form-label"><@spring.message code='patient.birthday'/></span></label>
                         </div>
                         <div class="input-field col s6">

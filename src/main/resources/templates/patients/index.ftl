@@ -22,21 +22,23 @@
         no queden asignados con dicho estilo-->
         </div>
         <div class="col s2 offset-s1 m2 offset-m1 l2 offset-l1 div-button">
-            <a id="buttonSave" class="waves-effect waves-light btn blue darken-4">
-                <i class="material-icons left">add</i><@spring.message code='add.patient'/>
-            </a>
+            <form id="addPattientForm" action="/patients/create" method="get">
+                <a id="addPatientButton" class="waves-effect waves-light btn blue darken-4">
+                    <i class="material-icons left">add</i><@spring.message code='add.patient'/>
+                </a>
+            </form>
         </div>
         <div class="col s7 m7 l7 div-search">
-            <form id="searchForm" action="/patients/indexPatient" method="post">
+            <form id="searchForm" action="/patients/index" method="get">
                 <div class="input-field">
-                    <input id="search" name="search" placeholder="<@spring.message code='insert.search'/>" class="search-input autocomplete" type="search" required>
+                    <input id="search" name="search" placeholder="<@spring.message code='insert.search'/>" class="search-input autocomplete" type="search" autocomplete="off" value="${parameterSearch}">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons">close</i>
                 </div>
             </form>
         </div>
         <div class="col offset-s1 s10 offset-m1 m10 offset-l1 l10">
-            <table class="striped">
+            <table class="striped highlight">
                 <thead>
                 <tr>
                     <th><@spring.message code='patient.name'/></th>
@@ -47,7 +49,8 @@
                 </thead>
                 <tbody>
                 <#list patientsList  as patient>
-                    <tr id="${patient.id}">
+                    <tr class="clickable" id="${patient.id}">
+                        <a class="hide" href="<@spring.url '/patients/show/${patient.id}'/>"></a>
                         <td>${patient.name}</td>
                         <td>${patient.address}</td>
                         <td>${patient.birthdayString}</td>

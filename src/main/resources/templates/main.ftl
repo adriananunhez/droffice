@@ -15,6 +15,13 @@
 </#macro>
 
 <#macro header_nav>
+    <div id="datePickerRoot"></div>
+    <span id="mensajedemesesi18n" class="hide">
+        <@spring.message code='button.default.cancel'/>
+    </span>
+    <span id="mensajedemeses" class="hide">
+        <@spring.message code='date.picker.meses'/>
+    </span>
     <nav class="nav-extended blue darkten-1">
         <div id="nav-content" class="nav-wrapper">
             <ul>

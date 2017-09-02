@@ -1,5 +1,6 @@
 $(function() {
-    /*$('.datepicker').pickadate({
+    $('.datepicker').pickadate({
+      container: "#datePickerRoot",
       labelMonthNext: 'Next month',
       labelMonthPrev: 'Previous month',
       labelMonthSelect: 'Select a month',
@@ -10,10 +11,12 @@ $(function() {
       weekdaysShort: [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ],
       weekdaysLetter: [ 'S', 'M', 'T', 'W', 'T', 'F', 'S' ],
       today: 'Today',
-      clear: 'Clear',
-      close: 'Close',
-      format: 'dd/mm/yyyy'
-    });*/
+      clear: $('#mensajedemesesi18n').text(),//'Clear',
+      close: 'Ok',
+      format: 'dd/mm/yyyy',
+      selectMonths: true, // Creates a dropdown to control month
+      selectYears: 100 // Creates a dropdown of 15 years to control year,
+    });
 //
 //    $('.datepicker').pickadate('picker').get('highlight', 'yyyy');
 //    $('.datepicker').pickadate('picker').get('highlight', 'dd');

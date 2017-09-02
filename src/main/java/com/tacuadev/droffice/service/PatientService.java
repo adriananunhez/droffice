@@ -1,7 +1,9 @@
 package com.tacuadev.droffice.service;
 
 import com.tacuadev.droffice.component.DataBaseUtils;
+import com.tacuadev.droffice.model.PatientMedicalHistoryModel;
 import com.tacuadev.droffice.model.PatientModel;
+import com.tacuadev.droffice.model.PlaceAttentionModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,15 +89,15 @@ public class PatientService {
         ResultSet selectPatientRs = null;
         StringBuilder selectPatientSb = new StringBuilder();
         selectPatientSb.append("SELECT id, address, birthday, creation_date, document_number, name, opening_date, sex, sex_int FROM patient");
-        selectPatientSb.append(" WHERE name=? OR address=? ORDER BY name ASC;");
+        selectPatientSb.append(" WHERE UPPER(name) like ? OR UPPER(address) like ? ORDER BY name ASC;");
 
         Date birthdayDate;
         Date openingDate;
         try{
             connection = dataSource.getConnection();
             selectPatientPs = connection.prepareStatement(selectPatientSb.toString());
-            selectPatientPs.setString(1,patientSearchValue);
-            selectPatientPs.setString(2,patientSearchValue);
+            selectPatientPs.setString(1,"%"+patientSearchValue.toUpperCase()+"%");
+            selectPatientPs.setString(2,"%"+patientSearchValue.toUpperCase()+"");
 
             selectPatientRs = selectPatientPs.executeQuery();
             while (selectPatientRs.next()){
@@ -159,5 +161,151 @@ public class PatientService {
 
     }
 
+    public PatientModel getPatientModelById(long patientId){
+        PatientModel patientModel = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
+        Connection connection = null;
+        PreparedStatement selectPatientPs = null;
+        ResultSet selectPatientRs = null;
+        StringBuilder selectPatientSb = new StringBuilder();
+        selectPatientSb.append("SELECT id, address, birthday, creation_date, document_number, name, opening_date, sex, sex_int FROM patient");
+        selectPatientSb.append(" WHERE id = ? ORDER BY name ASC;");
+
+        Date birthdayDate;
+        Date openingDate;
+        try{
+            connection = dataSource.getConnection();
+            selectPatientPs = connection.prepareStatement(selectPatientSb.toString());
+            selectPatientPs.setLong(1,patientId);
+
+            selectPatientRs = selectPatientPs.executeQuery();
+            if (selectPatientRs.next()){
+                patientModel = new PatientModel();
+                birthdayDate = new Date(selectPatientRs.getTimestamp("birthday").getTime());
+                openingDate = new Date(selectPatientRs.getTimestamp("opening_date").getTime());
+
+                patientModel.id = selectPatientRs.getLong("id");
+                patientModel.address = selectPatientRs.getString("address");
+                patientModel.documentNumber = selectPatientRs.getString("document_number");
+                patientModel.name = selectPatientRs.getString("name");
+                patientModel.sex = selectPatientRs.getString("sex");
+                patientModel.sexInt = selectPatientRs.getInt("sex_int");
+                patientModel.birthday = birthdayDate;
+                patientModel.birthdayString = sdf.format(birthdayDate);
+                patientModel.openingDate = openingDate;
+                patientModel.openingDateString = sdf.format(openingDate);
+                patientModel.creationDate = new Date(selectPatientRs.getTimestamp("creation_date").getTime());
+                patientModel.patientMedicalHistoryModelList = getPatientHistoryModelList(patientId);
+            }
+
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(selectPatientPs);
+            dataBaseUtils.resultSetClose(selectPatientRs);
+        }
+
+        return patientModel;
+    }
+
+    public List<PatientMedicalHistoryModel> getPatientHistoryModelList(long patientId){
+        List<PatientMedicalHistoryModel> patientMedicalHistoryModelList = new ArrayList<>();
+        PatientMedicalHistoryModel patientMedicalHistoryModel = null;
+
+        Connection connection = null;
+        PreparedStatement patientMedicalHistoryPs = null;
+        ResultSet patientMedicalHistoryRs = null;
+        StringBuilder patientMedicalHistorySb = new StringBuilder();
+        patientMedicalHistorySb.append("SELECT id, row_number, date, diagnostic, prescription, symptom, place_attention_id, creation_date");
+        patientMedicalHistorySb.append(" FROM patient_medical_history WHERE patient_id = ?");
+        try{
+            connection = dataSource.getConnection();
+            patientMedicalHistoryPs = connection.prepareStatement(patientMedicalHistorySb.toString());
+            patientMedicalHistoryPs.setLong(1,patientId);
+            patientMedicalHistoryRs = patientMedicalHistoryPs.executeQuery();
+
+
+            while (patientMedicalHistoryRs.next()){
+                patientMedicalHistoryModel = new PatientMedicalHistoryModel();
+                patientMedicalHistoryModel.id = patientMedicalHistoryRs.getLong("id");
+                patientMedicalHistoryModel.rowNumber = patientMedicalHistoryRs.getInt("row_number");
+                patientMedicalHistoryModel.date = new Date(patientMedicalHistoryRs.getTimestamp("date").getTime());
+                patientMedicalHistoryModel.diagnostic = patientMedicalHistoryRs.getString("diagnostic");
+                patientMedicalHistoryModel.prescription = patientMedicalHistoryRs.getString("symptom");
+                patientMedicalHistoryModel.symptom = patientMedicalHistoryRs.getString("symptom");
+                //patientMedicalHistoryModel.placeAttentionModel.id = patientMedicalHistoryRs.getLong("place_attention_id");
+                patientMedicalHistoryModel.creationDate = new Date(patientMedicalHistoryRs.getTimestamp("creation_date").getTime());
+                patientMedicalHistoryModelList.add(patientMedicalHistoryModel);
+            }
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(patientMedicalHistoryPs);
+            dataBaseUtils.resultSetClose(patientMedicalHistoryRs);
+        }
+        return patientMedicalHistoryModelList;
+    }
+
+    public void savePatientMedicalHistory(PatientMedicalHistoryModel patientMedicalHistoryModel){
+        Connection connection = null;
+        PreparedStatement patientMedicalHistoryPs = null;
+        StringBuilder patientMedicalHistorySb = new StringBuilder();
+        patientMedicalHistorySb.append("INSERT INTO patient_medical_history(creation_date, date, diagnostic, prescription, row_number, symptom, patient_id, place_attention_id)");
+        patientMedicalHistorySb.append(" VALUES (current_timestamp, ?, ?, ?, ?, ?, ?, ?);");
+        try{
+            connection = dataSource.getConnection();
+            patientMedicalHistoryPs = connection.prepareStatement(patientMedicalHistorySb.toString());
+
+            patientMedicalHistoryPs.setTimestamp(1,new Timestamp(patientMedicalHistoryModel.date.getTime()));
+            patientMedicalHistoryPs.setString(2, patientMedicalHistoryModel.diagnostic);
+            patientMedicalHistoryPs.setString(3, patientMedicalHistoryModel.prescription);
+            patientMedicalHistoryPs.setInt(4,patientMedicalHistoryModel.rowNumber);
+            patientMedicalHistoryPs.setString(5,patientMedicalHistoryModel.symptom);
+            patientMedicalHistoryPs.setLong(6, patientMedicalHistoryModel.patientModel.id);
+            patientMedicalHistoryPs.setLong(7,1);
+            patientMedicalHistoryPs.executeUpdate();
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(patientMedicalHistoryPs);
+        }
+    }
+
+    public List<PlaceAttentionModel> getPlaceAttentionModelList(){
+        List<PlaceAttentionModel> placeAttentionModelList = new ArrayList<>();
+        PlaceAttentionModel placeAttentionModel = null;
+
+        Connection connection = null;
+        PreparedStatement placeAttenttionPs = null;
+        ResultSet placeAttentionRs = null;
+        StringBuilder placeAttentionSb = new StringBuilder();
+        placeAttentionSb.append("SELECT id, description FROM place_attention;");
+        try {
+            connection = dataSource.getConnection();
+            placeAttenttionPs = connection.prepareStatement(placeAttentionSb.toString());
+            placeAttentionRs = placeAttenttionPs.executeQuery();
+
+            while (placeAttentionRs.next()){
+                placeAttentionModel = new PlaceAttentionModel();
+                placeAttentionModel.id = placeAttentionRs.getLong("id");
+                placeAttentionModel.description = placeAttentionRs.getString("description");
+                placeAttentionModelList.add(placeAttentionModel);
+            }
+
+        }catch (Throwable th){
+            LOG.info(th.getMessage());
+            LOG.info(th.getMessage(), th);
+        }finally {
+            dataBaseUtils.preparedStatementClose(placeAttenttionPs);
+            dataBaseUtils.resultSetClose(placeAttentionRs);
+        }
+
+        return placeAttentionModelList;
+    }
 }
